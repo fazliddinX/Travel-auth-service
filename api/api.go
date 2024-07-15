@@ -1,8 +1,12 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"Auth-service/api/handler"
+	"github.com/gin-gonic/gin"
+)
 
-func Router() *gin.Engine {
+func Router(handler *handler.Handler) *gin.Engine {
 	router := gin.Default()
 
+	router.POST("/api/register", handler.Register)
 }

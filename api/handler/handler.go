@@ -1,15 +1,16 @@
 package handler
 
 import (
+	s"Auth-service/server"
 	"Auth-service/storage/postgres"
 	"log/slog"
 )
-
+b
 type Handler struct {
 	Logger *slog.Logger
-	User   *postgres.UserRepo
+	Server   *s.Server
 }
 
-func NewHandler(logger *slog.Logger, user *postgres.UserRepo) *Handler {
-	return &Handler{Logger: logger, User: user}
+func NewHandler(logger *slog.Logger, server *s.Server) *Handler {
+	return &Handler{Logger: logger, Server: server}
 }

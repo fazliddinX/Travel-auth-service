@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-func (u *UserRepo) Create(in *pb.RegisterUserRes) (*pb.RegisterUserReq, error) {
-	user := pb.RegisterUserReq{}
+func (u *UserRepo) Create(in *pb.RegisterUserReq) (*pb.RegisterUserRes, error) {
+	user := pb.RegisterUserRes{}
 	err := u.DB.QueryRow("INSERT INTO users (user_name, email, password_hash, full_name) VALUES ($1, $2, $3, $4) returning id, created_at",
 		in.UserName, in.Email, in.Password, in.FullName).Scan(user.Id, user.CreatedAt)
 	user.Email = in.Email
@@ -94,7 +94,7 @@ func (u *UserRepo) Delete(id *pb.Id) (*pb.Success, error) {
 		deleted_at = date_part('epoch', current_timestamp)::INT 
 		WHERE comments_id = $1 AND deleted_at = 0`, id.Id)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	return &pb.Success{Successful: "deleted successfully"}, nil
 }
@@ -109,9 +109,15 @@ func (u *UserRepo) PasswordRecovery(email string) (bool, error) {
 	return true, nil
 }
 
-func (u *UserRepo) ActivityProfile(id string) (*pb.UserActivities, error) {
-	activities := &pb.UserActivities{}
-
+func (u *UserRepo) ActivityProfile(id *pb.Id) (*pb.UserActivities, error) {
+	var a int64
+	err := u.DB.QueryRow("select countries_visited from users where id = $1", id.Id).Scan(&a)
+	if err != nil {
+		return nil, err
+	}
+	activities := &pb.UserActivities{
+		CountriesVisited: a,
+	}
 	return activities, nil
 }
 

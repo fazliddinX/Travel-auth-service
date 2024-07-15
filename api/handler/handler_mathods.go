@@ -1,18 +1,28 @@
 package handler
 
 import (
-	"Auth-service/genproto/auth_service"
+	pb "Auth-service/genproto/auth_service"
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func (h *Handler) Register(c *gin.Context) {
-	user := auth_service.RegisterUser{}
-	err := c.ShouldBindJSON(&user)
-
+	userReq := pb.RegisterUserReq{}
+	err := c.ShouldBindJSON(&userReq)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		h.Logger.Error("error in ShouldBindJSON", "error", err)
+		return
 	}
-	h.User.Create(&user)
+	userRes, err := h.Server.Register(context.Background(), &userReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, userRes)
+}
+
+func (h *Handler) Login(c *gin.Context) {
 
 }

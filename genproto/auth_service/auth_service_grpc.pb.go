@@ -31,14 +31,13 @@ const (
 	AuthService_ActivityProfile_FullMethodName  = "/protos.AuthService/ActivityProfile"
 	AuthService_Follow_FullMethodName           = "/protos.AuthService/Follow"
 	AuthService_GetFollowers_FullMethodName     = "/protos.AuthService/GetFollowers"
-	AuthService_AddTravelStories_FullMethodName = "/protos.AuthService/AddTravelStories"
 )
 
 // AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	Register(ctx context.Context, in *RegisterUserRes, opts ...grpc.CallOption) (*RegisterUserReq, error)
+	Register(ctx context.Context, in *RegisterUserReq, opts ...grpc.CallOption) (*RegisterUserRes, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*Tokens, error)
 	GetProfile(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Profile, error)
 	UpdateProfile(ctx context.Context, in *UpdateUser, opts ...grpc.CallOption) (*Profile, error)
@@ -50,7 +49,6 @@ type AuthServiceClient interface {
 	ActivityProfile(ctx context.Context, in *Id, opts ...grpc.CallOption) (*UserActivities, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 	GetFollowers(ctx context.Context, in *FilterFollowers, opts ...grpc.CallOption) (*Followers, error)
-	AddTravelStories(ctx context.Context, in *ResTravelStories, opts ...grpc.CallOption) (*TravelStories, error)
 }
 
 type authServiceClient struct {
@@ -61,9 +59,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) Register(ctx context.Context, in *RegisterUserRes, opts ...grpc.CallOption) (*RegisterUserReq, error) {
+func (c *authServiceClient) Register(ctx context.Context, in *RegisterUserReq, opts ...grpc.CallOption) (*RegisterUserRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RegisterUserReq)
+	out := new(RegisterUserRes)
 	err := c.cc.Invoke(ctx, AuthService_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -181,21 +179,11 @@ func (c *authServiceClient) GetFollowers(ctx context.Context, in *FilterFollower
 	return out, nil
 }
 
-func (c *authServiceClient) AddTravelStories(ctx context.Context, in *ResTravelStories, opts ...grpc.CallOption) (*TravelStories, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TravelStories)
-	err := c.cc.Invoke(ctx, AuthService_AddTravelStories_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
-	Register(context.Context, *RegisterUserRes) (*RegisterUserReq, error)
+	Register(context.Context, *RegisterUserReq) (*RegisterUserRes, error)
 	Login(context.Context, *LoginRequest) (*Tokens, error)
 	GetProfile(context.Context, *Id) (*Profile, error)
 	UpdateProfile(context.Context, *UpdateUser) (*Profile, error)
@@ -207,7 +195,6 @@ type AuthServiceServer interface {
 	ActivityProfile(context.Context, *Id) (*UserActivities, error)
 	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
 	GetFollowers(context.Context, *FilterFollowers) (*Followers, error)
-	AddTravelStories(context.Context, *ResTravelStories) (*TravelStories, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -215,7 +202,7 @@ type AuthServiceServer interface {
 type UnimplementedAuthServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterUserRes) (*RegisterUserReq, error) {
+func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterUserReq) (*RegisterUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*Tokens, error) {
@@ -251,9 +238,6 @@ func (UnimplementedAuthServiceServer) Follow(context.Context, *FollowRequest) (*
 func (UnimplementedAuthServiceServer) GetFollowers(context.Context, *FilterFollowers) (*Followers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFollowers not implemented")
 }
-func (UnimplementedAuthServiceServer) AddTravelStories(context.Context, *ResTravelStories) (*TravelStories, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddTravelStories not implemented")
-}
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
 // UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -268,7 +252,7 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 }
 
 func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterUserRes)
+	in := new(RegisterUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -280,7 +264,7 @@ func _AuthService_Register_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: AuthService_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Register(ctx, req.(*RegisterUserRes))
+		return srv.(AuthServiceServer).Register(ctx, req.(*RegisterUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -483,24 +467,6 @@ func _AuthService_GetFollowers_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_AddTravelStories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResTravelStories)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).AddTravelStories(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_AddTravelStories_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).AddTravelStories(ctx, req.(*ResTravelStories))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -555,10 +521,6 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetFollowers",
 			Handler:    _AuthService_GetFollowers_Handler,
-		},
-		{
-			MethodName: "AddTravelStories",
-			Handler:    _AuthService_AddTravelStories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

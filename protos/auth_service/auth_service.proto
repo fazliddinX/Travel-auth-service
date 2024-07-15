@@ -5,7 +5,7 @@ option go_package = "genproto/auth_service";
 package protos;
 
 service AuthService {
-  rpc Register(RegisterUserRes) returns (RegisterUserReq);
+  rpc Register(RegisterUserReq) returns (RegisterUserRes);
   rpc Login(LoginRequest) returns (Tokens);
   rpc GetProfile(Id) returns (Profile);
   rpc UpdateProfile(UpdateUser) returns (Profile);
@@ -17,17 +17,16 @@ service AuthService {
   rpc ActivityProfile(Id) returns (UserActivities);
   rpc Follow(FollowRequest) returns (FollowResponse);
   rpc GetFollowers(FilterFollowers) returns (Followers);
-  rpc AddTravelStories(ResTravelStories) returns(TravelStories);
 }
 
-message RegisterUserRes {
+message RegisterUserReq {
   string userName = 1;
   string email = 2;
   string password = 3;
   string fullName = 4;
 }
 
-message RegisterUserReq {
+message RegisterUserRes {
   string id = 1;
   string userName = 2;
   string email = 3;
@@ -136,22 +135,4 @@ message Follower {
 
 message Followers {
   repeated Follower followers = 1;
-}
-
-message ResTravelStories {
-  string title = 1;
-  string content = 2;
-  string location = 3;
-  repeated string tags = 4;
-}
-
-message TravelStories {
-  string id = 1;
-  string title = 2;
-  string content = 3;
-  string location = 4;
-  repeated string tags = 5;
-  string authorId = 6;
-  string createAt = 7;
-  string updatedAt = 8;
 }

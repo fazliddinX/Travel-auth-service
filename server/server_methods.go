@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (s *Server) Register(ctx context.Context, in *pb.RegisterUserRes) (*pb.RegisterUserReq, error) {
+func (s *Server) Register(ctx context.Context, in *pb.RegisterUserReq) (*pb.RegisterUserRes, error) {
 	user, err := s.User.Create(in)
 	if err != nil {
 		s.Logger.Error("Error in register", "error", err)
@@ -97,7 +97,29 @@ func (s *Server) TokenRenewal(ctx context.Context, in *pb.RefreshToken) (*pb.Tok
 	}
 	return token, nil
 }
+func (s *Server) Logout(ctx context.Context, in *pb.Id) (*pb.Success, error) {
+	return &pb.Success{Successful: "logout"}, nil
+}
+func (s *Server) ActivityProfile(ctx context.Context, in *pb.Id) (*pb.UserActivities, error) {
+	activities, err := s.User.ActivityProfile(in)
+	if err != nil {
+		s.Logger.Error("Error in activityProfile", "error", err)
+		return nil, err
+	}
 
-func Logout(ctx context.Context, in *pb.Id) (*pb.Success, error) {
-
+	return activities, err
+}
+func (s *Server) Follow(ctx context.Context, in *pb.FollowRequest) (*pb.FollowResponse, error) {
+	follow, err := s.User.Follow(in)
+	if err != nil {
+		s.Logger.Error("Error in follow", "error", err)
+	}
+	return follow, err
+}
+func (s *Server) GetFollowers(ctx context.Context, in *pb.FilterFollowers) (*pb.Followers, error) {
+	followers, err := s.User.GetFollowers(in)
+	if err != nil {
+		s.Logger.Error("Error in getFollowers", "error", err)
+	}
+	return followers, err
 }
