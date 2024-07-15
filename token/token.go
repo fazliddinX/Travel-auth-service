@@ -66,7 +66,25 @@ func RenewalAccessToken(claims *Claims) (string, error) {
 	return token, err
 }
 
-func ExtractClaim(tokenString string) (*Claims, error) {
+func ExtractClaimAcces(tokenString string) (*Claims, error) {
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(AccessTokenKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
+}
+
+func ExtractClaimRefresh(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

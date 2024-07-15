@@ -12,6 +12,6 @@ type Server struct {
 	User   *postgres.UserRepo
 }
 
-func NewServer(user *postgres.UserRepo) *Server {
-	return &Server{User: user}
+func NewServer(user *postgres.UserRepo, logger *slog.Logger) *Server {
+	return &Server{User: user, Logger: logger}
 }

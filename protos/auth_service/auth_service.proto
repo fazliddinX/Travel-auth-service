@@ -16,7 +16,12 @@ service AuthService {
   rpc Logout(Id) returns (Success);
   rpc ActivityProfile(Id) returns (UserActivities);
   rpc Follow(FollowRequest) returns (FollowResponse);
+  rpc Unfollow(FollowingId) returns (Success);
   rpc GetFollowers(FilterFollowers) returns (Followers);
+}
+
+message FollowingId {
+  string followingId = 1;
 }
 
 message RegisterUserReq {

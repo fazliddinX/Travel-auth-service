@@ -4,6 +4,7 @@ import (
 	"Auth-service/config"
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 )
 
 func Connection() (*sql.DB, error) {

@@ -80,7 +80,7 @@ func (s *Server) PasswordRecovery(ctx context.Context, in *pb.Email) (*pb.Succes
 
 }
 func (s *Server) TokenRenewal(ctx context.Context, in *pb.RefreshToken) (*pb.Tokens, error) {
-	claim, err := token.ExtractClaim(in.RefreshToken)
+	claim, err := token.ExtractClaimAcces(in.RefreshToken)
 	if err != nil {
 		s.Logger.Error("Error in tokenRenewal", "error", err)
 		return nil, err
@@ -115,6 +115,14 @@ func (s *Server) Follow(ctx context.Context, in *pb.FollowRequest) (*pb.FollowRe
 		s.Logger.Error("Error in follow", "error", err)
 	}
 	return follow, err
+}
+func (s *Server) Unfollow(ctx context.Context, in *pb.FollowingId) (*pb.Success, error) {
+	err := s.User.Unfollow(in)
+	if err != nil {
+		s.Logger.Error("Error in unfollow", "error", err)
+		return nil, err
+	}
+	return &pb.Success{Successful: "unfollowed"}, nil
 }
 func (s *Server) GetFollowers(ctx context.Context, in *pb.FilterFollowers) (*pb.Followers, error) {
 	followers, err := s.User.GetFollowers(in)

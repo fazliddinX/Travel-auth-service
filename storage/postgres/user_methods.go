@@ -6,16 +6,25 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 )
 
 func (u *UserRepo) Create(in *pb.RegisterUserReq) (*pb.RegisterUserRes, error) {
+	_, err := u.DB.Exec("INSERT INTO users (user_name, email, password_hash, full_name) VALUES ($1, $2, $3, $4)",
+		in.UserName, in.Email, in.Password, in.FullName)
+	if err != nil {
+		log.Println("Error inserting user", err)
+		return nil, err
+	}
+
 	user := pb.RegisterUserRes{}
-	err := u.DB.QueryRow("INSERT INTO users (user_name, email, password_hash, full_name) VALUES ($1, $2, $3, $4) returning id, created_at",
-		in.UserName, in.Email, in.Password, in.FullName).Scan(user.Id, user.CreatedAt)
-	user.Email = in.Email
-	user.FullName = in.FullName
-	user.UserName = in.UserName
+	err = u.DB.QueryRow("select id, user_name, email, full_name, created_at from users where email = $1", in.Email).
+		Scan(&user.Id, &user.UserName, &user.Email, &user.FullName, &user.CreatedAt)
+	if err != nil {
+		log.Println("Error select user", err)
+		return nil, err
+	}
 	return &user, err
 }
 
@@ -135,8 +144,8 @@ func (u *UserRepo) Follow(followReq *pb.FollowRequest) (*pb.FollowResponse, erro
 	return followResp, nil
 }
 
-func (u *UserRepo) Unfollow(followReq *pb.FollowRequest) error {
-	_, err := u.DB.Exec("DELETE FROM follows WHERE follower_id = $1", followReq.FollowerId)
+func (u *UserRepo) Unfollow(followReq *pb.FollowingId) error {
+	_, err := u.DB.Exec("DELETE FROM follows WHERE follower_id = $1", followReq.FollowingId)
 	if err != nil {
 		return err
 	}
@@ -174,14 +183,4 @@ func (u *UserRepo) GetFollowers(in *pb.FilterFollowers) (*pb.Followers, error) {
 		followers = append(followers, follower)
 	}
 	return &pb.Followers{Followers: followers}, nil
-}
-
-func (u *UserRepo) AddTravelStories(story *pb.ResTravelStories) (*pb.TravelStories, error) {
-	//var id string
-	//err := u.DB.QueryRow("INSERT INTO travel_stories (title, content, location, tags, author_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id",
-	//	story.Title, story.Content, story.Location, pq.Array(story.Tags), story.AuthorId).Scan(&id)
-	//if err != nil {
-	//	return nil, err
-	//}
-	return nil, nil
 }

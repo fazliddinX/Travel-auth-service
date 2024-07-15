@@ -30,6 +30,7 @@ const (
 	AuthService_Logout_FullMethodName           = "/protos.AuthService/Logout"
 	AuthService_ActivityProfile_FullMethodName  = "/protos.AuthService/ActivityProfile"
 	AuthService_Follow_FullMethodName           = "/protos.AuthService/Follow"
+	AuthService_Unfollow_FullMethodName         = "/protos.AuthService/Unfollow"
 	AuthService_GetFollowers_FullMethodName     = "/protos.AuthService/GetFollowers"
 )
 
@@ -48,6 +49,7 @@ type AuthServiceClient interface {
 	Logout(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Success, error)
 	ActivityProfile(ctx context.Context, in *Id, opts ...grpc.CallOption) (*UserActivities, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
+	Unfollow(ctx context.Context, in *FollowingId, opts ...grpc.CallOption) (*Success, error)
 	GetFollowers(ctx context.Context, in *FilterFollowers, opts ...grpc.CallOption) (*Followers, error)
 }
 
@@ -169,6 +171,16 @@ func (c *authServiceClient) Follow(ctx context.Context, in *FollowRequest, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) Unfollow(ctx context.Context, in *FollowingId, opts ...grpc.CallOption) (*Success, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Success)
+	err := c.cc.Invoke(ctx, AuthService_Unfollow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) GetFollowers(ctx context.Context, in *FilterFollowers, opts ...grpc.CallOption) (*Followers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Followers)
@@ -194,6 +206,7 @@ type AuthServiceServer interface {
 	Logout(context.Context, *Id) (*Success, error)
 	ActivityProfile(context.Context, *Id) (*UserActivities, error)
 	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
+	Unfollow(context.Context, *FollowingId) (*Success, error)
 	GetFollowers(context.Context, *FilterFollowers) (*Followers, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -234,6 +247,9 @@ func (UnimplementedAuthServiceServer) ActivityProfile(context.Context, *Id) (*Us
 }
 func (UnimplementedAuthServiceServer) Follow(context.Context, *FollowRequest) (*FollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
+}
+func (UnimplementedAuthServiceServer) Unfollow(context.Context, *FollowingId) (*Success, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Unfollow not implemented")
 }
 func (UnimplementedAuthServiceServer) GetFollowers(context.Context, *FilterFollowers) (*Followers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFollowers not implemented")
@@ -449,6 +465,24 @@ func _AuthService_Follow_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_Unfollow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowingId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Unfollow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Unfollow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Unfollow(ctx, req.(*FollowingId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_GetFollowers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FilterFollowers)
 	if err := dec(in); err != nil {
@@ -517,6 +551,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Follow",
 			Handler:    _AuthService_Follow_Handler,
+		},
+		{
+			MethodName: "Unfollow",
+			Handler:    _AuthService_Unfollow_Handler,
 		},
 		{
 			MethodName: "GetFollowers",
