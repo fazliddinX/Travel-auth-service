@@ -1,46 +1,49 @@
 package main
 
 import (
-	"Auth-service/api"
-	"Auth-service/api/handler"
-	"Auth-service/genproto/auth_service"
-	logger2 "Auth-service/logger"
-	"Auth-service/server"
-	"Auth-service/storage/postgres"
-	"google.golang.org/grpc"
+	"auth-service/api"
+	"auth-service/api/handler"
+	"auth-service/cmd/server"
+	"auth-service/config"
+	"auth-service/logs"
+	"auth-service/storage/postgres"
+	"auth-service/storage/redis"
 	"log"
-	"net"
+	"log/slog"
+	"sync"
 )
 
 func main() {
-	logger := logger2.InitLogger()
+	logs.InitLogger()
 
-	db, err := postgres.Connection()
+	logs.Logger.Info("Starting the server ...")
+	db, err := postgres.ConnectDB()
 	if err != nil {
-		logger.Error("Failed to connect to database", "error", err.Error())
-		log.Fatalln(err)
+		logs.Logger.Error("Error connection th postgres", slog.String("error", err.Error()))
+		log.Fatal(err)
 	}
+	defer db.Close()
 
-	user := postgres.NewUserRepo(logger, db)
+	redisClient := redis.NewRedisClient()
 
-	server1 := server.NewServer(user, logger)
+	cfg := config.Load()
+	handle := handler.NewHandler(postgres.NewUserRepo(db), logs.Logger, redisClient)
+	router := api.NewRouter(handle)
 
-	handler1 := handler.NewHandler(logger, server1)
+	var wg sync.WaitGroup
+	wg.Add(1)
 
-	router := api.Router(handler1)
+	go func() {
+		defer wg.Done()
+		logs.Logger.Info("server is running", "PORT", cfg.HTTP_PORT)
+		err := router.Run(cfg.HTTP_PORT)
+		if err != nil {
+			logs.Logger.Error("Faild server is running", "error", err.Error())
+			log.Fatal(err)
+		}
+	}()
 
-	go log.Fatalln(router.Run(":7070"))
+	server.RunServer(postgres.NewUserRepo(db), redis.NewRedisClient())
 
-	//--------------------------------------------------------------------------------------
-
-	listner, err := net.Listen("tcp", ":5051")
-	if err != nil {
-		logger.Error("Failed to listen", "error", err.Error())
-		log.Fatalln(err)
-	}
-	defer listner.Close()
-
-	grpcServer := grpc.NewServer()
-	auth_service.RegisterAuthServiceServer(grpcServer, server1)
-	log.Fatalln(grpcServer.Serve(listner))
+	wg.Wait()
 }

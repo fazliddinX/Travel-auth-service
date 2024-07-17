@@ -1,15 +1,21 @@
 package handler
 
 import (
-	s "Auth-service/server"
+	"auth-service/storage/postgres"
+	"auth-service/storage/redis"
 	"log/slog"
 )
 
 type Handler struct {
-	Logger *slog.Logger
-	Server *s.Server
+	UserRepo    *postgres.UserRepo
+	RedisClient *redis.RedisClient
+	Logger      *slog.Logger
 }
 
-func NewHandler(logger *slog.Logger, server *s.Server) *Handler {
-	return &Handler{Logger: logger, Server: server}
+func NewHandler(user *postgres.UserRepo, logger *slog.Logger, client *redis.RedisClient) *Handler {
+	return &Handler{
+		UserRepo: user,
+		Logger:   logger,
+		RedisClient: client,
+	}
 }
