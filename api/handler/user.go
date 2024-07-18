@@ -1,16 +1,15 @@
 package handler
 
 import (
-	"auth-service/api/handler/token"
 	"auth-service/models"
 	"auth-service/pkg"
+	"auth-service/token"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // @Summary Register a new user
@@ -32,17 +31,6 @@ func (h *Handler) RegisterHandler(ctx *gin.Context) {
 		})
 		return
 	}
-
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(signUp.Password), bcrypt.DefaultCost)
-	if err != nil {
-		h.Logger.Error("Error generating hashed password", "error", err.Error())
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"Error": err.Error(),
-		})
-		return
-	}
-
-	signUp.Password = string(hashedPass)
 
 	resp, err := h.UserRepo.CreateUser(signUp)
 	if err != nil {
@@ -68,9 +56,9 @@ func (h *Handler) RegisterHandler(ctx *gin.Context) {
 // @Failure 500 {object} models.Errors
 // @Router /api/v1/auth/login [post]
 func (h *Handler) LoginHandler(ctx *gin.Context) {
-	var signIn models.LoginRequest
+	var Login models.LoginRequest
 
-	if err := ctx.ShouldBindJSON(&signIn); err != nil {
+	if err := ctx.ShouldBindJSON(&Login); err != nil {
 		h.Logger.Error("Error bind json")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -78,7 +66,7 @@ func (h *Handler) LoginHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.UserRepo.GetUserByEmail(signIn.Email)
+	user, err := h.UserRepo.GetUserByEmail(Login.Email)
 	if err != nil {
 		h.Logger.Error("Error getting user by email", "error", err.Error())
 		ctx.JSON(http.StatusNotFound, gin.H{
@@ -87,7 +75,7 @@ func (h *Handler) LoginHandler(ctx *gin.Context) {
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signIn.Password)); err != nil {
+	if Login.Password != user.Password {
 		h.Logger.Error("Invalid password", "error", err.Error())
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -108,18 +96,12 @@ func (h *Handler) LoginHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate refresh token"})
 		return
 	}
-	err = h.UserRepo.SaveRefreshToken(user.Username, refreshToken, time.Now().Add(7*24*time.Hour))
-	if err != nil {
-		h.Logger.Error("error in save refresh token", slog.String("error", err.Error()))
-		ctx.JSON(http.StatusInsufficientStorage, gin.H{"error": "Faild in save refresh token"})
-		return
-	}
 	h.Logger.Info("user login successfully")
 	newToken := models.Token{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}
-	
+
 	ctx.JSON(http.StatusOK, newToken)
 }
 
@@ -130,8 +112,8 @@ func (h *Handler) LoginHandler(ctx *gin.Context) {
 // @Security ApiKeyAuth
 // @Produce json
 // @Param Authorization header string true "Logout User"
-// @Success 200 {object} models.Success
-// @Failure 404 {object} models.Errors
+// @Success 200 {object} "Success"
+// @Failure 404 {object} "Errors"
 // @Failure 500 {object} models.Errors
 // @Router /api/v1/auth/logout [post]
 func (h *Handler) LogoutUserHandler(ctx *gin.Context) {
@@ -140,15 +122,6 @@ func (h *Handler) LogoutUserHandler(ctx *gin.Context) {
 	accessClaims, err := token.ExtractClaimsAccess(accessToken)
 	if err != nil {
 		h.Logger.Error("eror tokenni extract qilishda", slog.String("error", err.Error()))
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	// Refresh tokenni bekor qilish
-	err = h.UserRepo.InvalidateRefreshToken(accessClaims.Username)
-	if err != nil {
-		h.Logger.Error("Error invalidate token", slog.String("error", err.Error()))
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -287,14 +260,6 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 	claims, err := token.ExtractClaims(refreshToken)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token"})
-		return
-	}
-	isValid, err := h.UserRepo.IsRefreshTokenValid(refreshToken)
-	if err != nil || !isValid {
-		h.Logger.Error("token invalid", slog.String("error", err.Error()))
-		c.JSON(http.StatusUnauthorized, models.Errors{
-			Message: "token invalid",
-		})
 		return
 	}
 

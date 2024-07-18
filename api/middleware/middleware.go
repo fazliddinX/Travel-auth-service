@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"auth-service/api/handler/token"
 	"auth-service/logs"
+	"auth-service/token"
 	"fmt"
 	"log/slog"
 	"net/http"

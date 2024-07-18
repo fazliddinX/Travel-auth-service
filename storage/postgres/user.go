@@ -19,7 +19,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 
 func (repo *UserRepo) CreateUser(user models.RegisterRequest) (*models.RegisterResponse, error) {
 	var (
-		userResp  models.RegisterResponse
+		response  models.RegisterResponse
 		createdAt time.Time
 	)
 	err := repo.DB.QueryRow(`
@@ -30,10 +30,7 @@ func (repo *UserRepo) CreateUser(user models.RegisterRequest) (*models.RegisterR
 			full_name
 		)
 		VALUES (
-			$1,
-			$2,
-			$3,
-			$4
+			$1, $2, $3, $4
 		)
 		RETURNING
 			id,
@@ -42,19 +39,18 @@ func (repo *UserRepo) CreateUser(user models.RegisterRequest) (*models.RegisterR
 			full_name,
 			created_at
 	`, user.Username, user.Email, user.Password, user.FullName).
-		Scan(&userResp.ID, &userResp.Username, &userResp.Email, &userResp.FullName, &createdAt)
+		Scan(&response.ID, &response.Username, &response.Email, &response.FullName, &createdAt)
 
 	if err != nil {
 		return nil, err
 	}
 
-	userResp.CreatedAt = createdAt.Format("2006-01-02 15:04:05")
-
-	return &userResp, nil
+	response.CreatedAt = createdAt.Format("2006-01-02 15:04:05")
+	return &response, nil
 }
 
 func (repo *UserRepo) GetUserByEmail(email string) (*models.LoginResponse, error) {
-	var userResp models.LoginResponse
+	var response models.LoginResponse
 
 	err := repo.DB.QueryRow(`
 		SELECT
@@ -66,33 +62,32 @@ func (repo *UserRepo) GetUserByEmail(email string) (*models.LoginResponse, error
 			users
 		WHERE
 			deleted_at = 0 AND email = $1
-	`, email).Scan(&userResp.ID, &userResp.Username, &userResp.Email, &userResp.Password)
+	`, email).Scan(&response.ID, &response.Username, &response.Email, &response.Password)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &userResp, nil
+	return &response, nil
 }
 
 func (repo *UserRepo) UpdatePassword(resetPassword models.UpdatePassword) (*models.Success, error) {
 	_, err := repo.DB.Exec(`
-		UPDATE 
-			users 
+		UPDATE users
 		SET 
-			password_hash = $1 
+			password_hash = $1
 		WHERE 
-			id = $2 and deleted_at = 0
+			id = $2 AND deleted_at = 0
 	`, resetPassword.NewPassword, resetPassword.ID)
 
 	if err != nil {
 		return &models.Success{
-			Message: "Error in updated password",
+			Message: "Error in updating password",
 		}, err
 	}
 
 	return &models.Success{
-		Message: "Reset password successfully",
+		Message: "Password reset successfully",
 	}, nil
 }
 
@@ -115,7 +110,7 @@ func (repo *UserRepo) EmailExists(email string) (bool, error) {
 }
 
 func (repo *UserRepo) GetUserInfo(id string) (*pb.UserInfoResponse, error) {
-	var info pb.UserInfoResponse
+	var response pb.UserInfoResponse
 
 	err := repo.DB.QueryRow(`
 		SELECT
@@ -125,19 +120,19 @@ func (repo *UserRepo) GetUserInfo(id string) (*pb.UserInfoResponse, error) {
 		FROM
 			users
 		WHERE
-			deleted_at = 0 and id = $1
-	`, id).Scan(&info.Id, &info.Username, &info.FullName)
+			deleted_at = 0 AND id = $1
+	`, id).Scan(&response.Id, &response.Username, &response.FullName)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &info, nil
+	return &response, nil
 }
 
 func (repo *UserRepo) GetUserProfile(id string) (*pb.GetProfileResponse, error) {
 	var (
-		profile   pb.GetProfileResponse
+		response  pb.GetProfileResponse
 		bio       sql.NullString
 		createdAt time.Time
 		updatedAt time.Time
@@ -157,32 +152,30 @@ func (repo *UserRepo) GetUserProfile(id string) (*pb.GetProfileResponse, error) 
 			users
 		WHERE
 			id = $1 AND deleted_at = 0
-	`, id).Scan(&profile.Id, &profile.Username, &profile.Email, &profile.FullName, &bio, &profile.CountriesVisited, &createdAt, &updatedAt)
+	`, id).Scan(&response.Id, &response.Username, &response.Email, &response.FullName, &bio, &response.CountriesVisited, &createdAt, &updatedAt)
 
 	if err != nil {
 		return nil, err
 	}
 
+	response.Bio = bio.String
 	if !bio.Valid {
-		profile.Bio = "No Bio"
+		response.Bio = "No Bio"
 	}
+	response.CreatedAt = createdAt.Format("2006-01-02 15:04:05")
+	response.UpdatedAt = updatedAt.Format("2006-01-02 15:04:05")
 
-	profile.Bio = bio.String
-	profile.CreatedAt = createdAt.Format("2006-01-02 15:04:05")
-	profile.UpdatedAt = updatedAt.Format("2006-01-02 15:04:05")
-
-	return &profile, nil
+	return &response, nil
 }
 
 func (repo *UserRepo) UpdateUserProfile(req *pb.UpdateProfileRequest) (*pb.UpdateProfileResponse, error) {
 	var (
-		profile   pb.UpdateProfileResponse
+		response  pb.UpdateProfileResponse
 		updatedAt time.Time
 	)
 
 	err := repo.DB.QueryRow(`
-		UPDATE 
-			users
+		UPDATE users
 		SET 
 			full_name = $1,
 			bio = $2,
@@ -198,16 +191,14 @@ func (repo *UserRepo) UpdateUserProfile(req *pb.UpdateProfileRequest) (*pb.Updat
 			bio,
 			countries_visited,
 			updated_at
-		
-	`, req.FullName, req.Bio, req.CountriesVisited, req.Id).Scan(&profile.Id, &profile.Username, &profile.Email, &profile.FullName, &profile.Bio, &profile.CountriesVisited, &updatedAt)
+	`, req.FullName, req.Bio, req.CountriesVisited, req.Id).Scan(&response.Id, &response.Username, &response.Email, &response.FullName, &response.Bio, &response.CountriesVisited, &updatedAt)
 
 	if err != nil {
 		return nil, err
 	}
 
-	profile.UpdatedAt = updatedAt.Format("2006-01-02 15:04:05")
-
-	return &profile, nil
+	response.UpdatedAt = updatedAt.Format("2006-01-02 15:04:05")
+	return &response, nil
 }
 
 func (repo *UserRepo) GetUsers(req *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
@@ -219,13 +210,13 @@ func (repo *UserRepo) GetUsers(req *pb.ListUsersRequest) (*pb.ListUsersResponse,
 			username, 
 			full_name, 
 			countries_visited
-        FROM 
+		FROM 
 			users
 		WHERE 
 			deleted_at = 0
-        ORDER BY 
+		ORDER BY 
 			username
-        LIMIT $1 
+		LIMIT $1
 		OFFSET $2
 	`, req.Limit, offset)
 	if err != nil {
@@ -256,25 +247,24 @@ func (repo *UserRepo) GetUsers(req *pb.ListUsersRequest) (*pb.ListUsersResponse,
 		return nil, err
 	}
 
-	resp := &pb.ListUsersResponse{
+	response := &pb.ListUsersResponse{
 		Users: users,
 		Total: total,
 		Page:  req.Page,
 		Limit: req.Limit,
 	}
 
-	return resp, nil
+	return response, nil
 }
 
 func (repo *UserRepo) DeleteUser(id string) (*pb.DeleteUserResponse, error) {
 	res, err := repo.DB.Exec(`
-        UPDATE
-            users
-        SET
-            deleted_at = $1
-        WHERE
-            deleted_at = 0 AND id = $2
-    `, time.Now().Unix(), id)
+		UPDATE users
+		SET
+			deleted_at = $1
+		WHERE
+			deleted_at = 0 AND id = $2
+	`, time.Now().Unix(), id)
 
 	if err != nil {
 		return nil, err
@@ -286,8 +276,7 @@ func (repo *UserRepo) DeleteUser(id string) (*pb.DeleteUserResponse, error) {
 	}
 
 	if rowsAffected == 0 {
-		err := sql.ErrNoRows
-		return nil, err
+		return nil, sql.ErrNoRows
 	}
 
 	return &pb.DeleteUserResponse{
@@ -296,7 +285,7 @@ func (repo *UserRepo) DeleteUser(id string) (*pb.DeleteUserResponse, error) {
 }
 
 func (repo *UserRepo) FollowingUser(req *pb.FollowUserRequest) (*pb.FollowUserResponse, error) {
-	var follower pb.FollowUserResponse
+	var response pb.FollowUserResponse
 
 	err := repo.DB.QueryRow(`
 		INSERT INTO followers (
@@ -304,35 +293,35 @@ func (repo *UserRepo) FollowingUser(req *pb.FollowUserRequest) (*pb.FollowUserRe
 			following_id
 		)
 		VALUES (
-			$1,
-			$2
+			$1, $2
 		)
 		RETURNING
 			follower_id,
 			following_id,
 			followed_at
-	`, req.FollowerId, req.FollowingId).Scan(&follower.FollowerId, &follower.FollowingId, &follower.FollowingAt)
+	`, req.FollowerId, req.FollowingId).Scan(&response.FollowerId, &response.FollowingId, &response.FollowingAt)
 
 	if err != nil {
 		return nil, err
 	}
-	return &follower, nil
+	return &response, nil
 }
 
 func (repo *UserRepo) GetFollowers(req *pb.ListFollowersRequest) (*pb.ListFollowersResponse, error) {
 	var followers []*pb.Follower
 	offset := (req.Page - 1) * req.Limit
+
 	rows, err := repo.DB.Query(`
 		SELECT
 			u.id,
-			username,
-			full_name
+			u.username,
+			u.full_name
 		FROM
 			users u
 		INNER JOIN
 			followers f ON u.id = f.follower_id
 		WHERE
-			f.following_id = $1 and deleted_at = 0
+			f.following_id = $1 AND u.deleted_at = 0
 		OFFSET $2
 		LIMIT $3
 	`, req.UserId, offset, req.Limit)
@@ -340,20 +329,14 @@ func (repo *UserRepo) GetFollowers(req *pb.ListFollowersRequest) (*pb.ListFollow
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var follower pb.Follower
-
-		err = rows.Scan(&follower.Id, &follower.Username, &follower.FullName)
-		if err != nil {
+		if err := rows.Scan(&follower.Id, &follower.Username, &follower.FullName); err != nil {
 			return nil, err
 		}
-
 		followers = append(followers, &follower)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
 	}
 
 	var total int32
@@ -365,36 +348,18 @@ func (repo *UserRepo) GetFollowers(req *pb.ListFollowersRequest) (*pb.ListFollow
 		INNER JOIN
 			followers f ON u.id = f.follower_id
 		WHERE
-			f.following_id = $1 and u.deleted_at = 0
-	`, req.UserId).Scan(&total)
+			f.following_id = $1 AND u.deleted_at = 0`,
+		req.UserId).Scan(&total)
+
 	if err != nil {
 		return nil, err
 	}
-
-	
-	resp := &pb.ListFollowersResponse{
+	response := &pb.ListFollowersResponse{
 		Followers: followers,
 		Total:     total,
 		Page:      req.Page,
 		Limit:     req.Limit,
 	}
 
-	return resp, nil
-}
-
-func (repo *UserRepo) GetUserActivity(id string) (*pb.GetUserActivityResponse, error) {
-	var resp pb.GetUserActivityResponse
-
-	err := repo.DB.QueryRow(`
-		SELECT
-			id,
-			countries_visited,
-			updated_at
-		FROM
-			users
-		WHERE
-			deleted_at = 0 and id = $1
-	`, id).Scan(&resp.UserId, &resp.CountriesVisited, &resp.LastActive)
-
-	return &resp, err
+	return response, nil
 }
