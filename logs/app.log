@@ -210,3 +210,15 @@
 {"time":"2024-07-17T19:14:30.095017522+05:00","level":"ERROR","msg":"Userni ma'lumotlarini olishda xatolik","error":"sql: no rows in result set"}
 {"time":"2024-07-17T19:20:35.794552148+05:00","level":"ERROR","msg":"Userni ma'lumotlarini olishda xatolik","error":"sql: no rows in result set"}
 {"time":"2024-07-17T19:38:20.723155162+05:00","level":"INFO","msg":"Handling RefreshToken request"}
+{"time":"2024-07-18T08:30:30.050072157+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T08:30:30.059431672+05:00","level":"ERROR","msg":"Error connection th postgres","error":"pq: password authentication failed for user \"postgres\""}
+{"time":"2024-07-18T08:31:40.857650178+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T08:31:40.864483588+05:00","level":"ERROR","msg":"Error connection th postgres","error":"pq: password authentication failed for user \"postgres\""}
+{"time":"2024-07-18T08:38:00.182926665+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T08:38:00.187562694+05:00","level":"ERROR","msg":"Error connection th postgres","error":"pq: password authentication failed for user \"postgres\""}
+{"time":"2024-07-18T08:39:03.874253775+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T08:39:03.88015223+05:00","level":"INFO","msg":"server is running","PORT":":8080"}
+{"time":"2024-07-18T08:39:03.880263163+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T08:40:26.057838818+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T08:40:26.062969702+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T08:40:26.063039208+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}

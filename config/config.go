@@ -27,15 +27,15 @@ func Load() Config {
 
 	config := Config{}
 
-	config.HTTP_PORT = cast.ToString(coalesce("HTTP_PORT", ":8080"))
+	config.HTTP_PORT = cast.ToString(coalesce("HTTP_PORT", ":8081"))
 	config.GRPC_PORT = cast.ToString(coalesce("GRPC_PORT", ":50050"))
 	config.DB_HOST = cast.ToString(coalesce("DB_HOST", "localhost"))
 	config.DB_PORT = cast.ToString(coalesce("DB_PORT", "5432"))
 	config.DB_USER = cast.ToString(coalesce("DB_USER", "postgres"))
-	config.DB_NAME = cast.ToString(coalesce("DB_NAME", "postgres"))
-	config.DB_PASSWORD = cast.ToString(coalesce("DB_PASSWORD", "passwrod"))
-	config.ACCESS_TOKEN = cast.ToString(coalesce("ACCESS_TOKEN", "my_secret_key"))
-	config.REFRESH_TOKEN = cast.ToString(coalesce("REFRESH_TOKEN", "my_secret_key"))
+	config.DB_NAME = cast.ToString(coalesce("DB_NAME", "auth_service"))
+	config.DB_PASSWORD = cast.ToString(coalesce("DB_PASSWORD", "123321"))
+	config.ACCESS_TOKEN = cast.ToString(coalesce("ACCESS_TOKEN", "abcde"))
+	config.REFRESH_TOKEN = cast.ToString(coalesce("REFRESH_TOKEN", "edcba"))
 
 	return config
 }
