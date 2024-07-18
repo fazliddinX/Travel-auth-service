@@ -363,3 +363,20 @@ func (repo *UserRepo) GetFollowers(req *pb.ListFollowersRequest) (*pb.ListFollow
 
 	return response, nil
 }
+
+func (repo *UserRepo) GetUserActivity(id string) (*pb.GetUserActivityResponse, error) {
+	var resp pb.GetUserActivityResponse
+
+	err := repo.DB.QueryRow(`
+		SELECT
+			id,
+			countries_visited,
+			updated_at
+		FROM
+			users
+		WHERE
+			deleted_at = 0 and id = $1
+	`, id).Scan(&resp.UserId, &resp.CountriesVisited, &resp.LastActive)
+
+	return &resp, err
+}

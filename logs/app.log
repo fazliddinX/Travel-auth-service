@@ -222,3 +222,6 @@
 {"time":"2024-07-18T08:40:26.057838818+05:00","level":"INFO","msg":"Starting the server ..."}
 {"time":"2024-07-18T08:40:26.062969702+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
 {"time":"2024-07-18T08:40:26.063039208+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T10:14:44.864367045+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T10:14:44.869824368+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T10:14:44.869983954+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}

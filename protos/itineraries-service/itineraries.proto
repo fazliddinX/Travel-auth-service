@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "generated/itineraries";
+option go_package = "genproto/itineraries";
 
 package itineraries_service;
 
