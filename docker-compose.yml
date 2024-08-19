@@ -7,7 +7,7 @@ services:
       - travel
     volumes:
       - ./migrations:/migrations
-    command: [ "-path", "/db/migrations", "-database", "postgres://postgres:123321@postgres-travel:5432/travel_auth?sslmode=disable", "up" ]
+    command: [ "-path", "db/migrations", "-database", "postgres://postgres:123321@postgres-travel:5432/travel_auth?sslmode=disable", "up" ]
     depends_on:
       postgres:
         condition: service_healthy
