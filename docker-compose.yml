@@ -40,8 +40,8 @@ services:
     networks:
       - travel
     ports:
-      - 8081:8081
-      - 50051:50051
+      - 8088:8081
+      - 50055:50051
 
 networks:
   travel:
