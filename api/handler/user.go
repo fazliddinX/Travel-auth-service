@@ -20,7 +20,7 @@ import (
 // @Param Register body models.RegisterRequest true "User Registration"
 // @Success 201 {object} models.RegisterResponse
 // @Failure 400 {object} models.Errors
-// @Router /api/v1/auth/register [post]
+// @Router /auth/register [post]
 func (h *Handler) RegisterHandler(ctx *gin.Context) {
 	var signUp models.RegisterRequest
 
@@ -54,7 +54,7 @@ func (h *Handler) RegisterHandler(ctx *gin.Context) {
 // @Failure 400 {object} models.Errors
 // @Failure 404 {object} models.Errors
 // @Failure 500 {object} models.Errors
-// @Router /api/v1/auth/login [post]
+// @Router /auth/login [post]
 func (h *Handler) LoginHandler(ctx *gin.Context) {
 	var Login models.LoginRequest
 
@@ -112,10 +112,10 @@ func (h *Handler) LoginHandler(ctx *gin.Context) {
 // @Security ApiKeyAuth
 // @Produce json
 // @Param Authorization header string true "Logout User"
-// @Success 200 {object} "Success"
-// @Failure 404 {object} "Errors"
+// @Success 200 {object} string
+// @Failure 404 {object} string
 // @Failure 500 {object} models.Errors
-// @Router /api/v1/auth/logout [post]
+// @Router /auth/logout [post]
 func (h *Handler) LogoutUserHandler(ctx *gin.Context) {
 	accessToken := ctx.GetHeader("Authorization")
 
@@ -145,7 +145,7 @@ func (h *Handler) LogoutUserHandler(ctx *gin.Context) {
 // @Failure 404 {object} models.Errors
 // @Failure 400 {object} models.Errors
 // @Failure 500 {object} models.Errors
-// @Router /api/v1/auth/reset-password [post]
+// @Router /auth/reset-password [post]
 func (h *Handler) ResetPasswordHandler(ctx *gin.Context) {
 	var email models.ResetPassword
 
@@ -201,7 +201,7 @@ func (h *Handler) ResetPasswordHandler(ctx *gin.Context) {
 // @Success 200 {object} models.Success
 // @Failure 400 {object} models.Errors
 // @Failure 500 {object} models.Errors
-// @Router /api/v1/auth/reset-password/new-password [post]
+// @Router /auth/reset-password/new-password [post]
 func (h *Handler) UpdatePasswordHandler(ctx *gin.Context) {
 	var pass models.UpdatePassword
 	accesstoken := ctx.Query("token")
@@ -247,7 +247,7 @@ func (h *Handler) UpdatePasswordHandler(ctx *gin.Context) {
 // @Failure 401 {object} models.Errors
 // @Failure 500 {object} models.Errors
 // @Security ApiKeyAuth
-// @Router /api/v1/auth/refresh [post]
+// @Router /auth/refresh [post]
 func (h *Handler) RefreshToken(c *gin.Context) {
 	h.Logger.Info("Handling RefreshToken request")
 

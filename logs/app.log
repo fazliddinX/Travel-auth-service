@@ -225,3 +225,40 @@
 {"time":"2024-07-18T10:14:44.864367045+05:00","level":"INFO","msg":"Starting the server ..."}
 {"time":"2024-07-18T10:14:44.869824368+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
 {"time":"2024-07-18T10:14:44.869983954+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T15:03:08.991227665+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T15:03:08.997670164+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T15:03:08.997792779+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T15:06:01.295738381+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T15:06:01.300815454+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T15:06:01.300801118+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T15:06:50.664555116+05:00","level":"INFO","msg":"user login successfully"}
+{"time":"2024-07-18T15:25:16.149196315+05:00","level":"INFO","msg":"user login successfully"}
+{"time":"2024-07-18T15:33:09.765185393+05:00","level":"INFO","msg":"user login successfully"}
+{"time":"2024-07-18T16:36:32.009408754+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T16:36:32.016983144+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T16:36:32.017106443+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T17:06:35.362955757+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T17:06:35.369194335+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T17:06:35.36934485+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T20:27:41.224720549+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T20:27:41.233136815+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T20:27:41.233179096+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T20:37:40.798851139+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-07-18T20:37:40.808078056+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-07-18T20:37:40.808200224+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-07-18T21:02:10.269529909+05:00","level":"ERROR","msg":"eror tokenni extract qilishda","error":"token contains an invalid number of segments"}
+{"time":"2024-07-18T21:02:21.567825375+05:00","level":"INFO","msg":"user login successfully"}
+{"time":"2024-07-18T21:03:09.500488498+05:00","level":"INFO","msg":"Handling RefreshToken request"}
+{"time":"2024-07-18T21:03:38.652861521+05:00","level":"INFO","msg":"Handling RefreshToken request"}
+{"time":"2024-07-18T21:06:35.212757157+05:00","level":"INFO","msg":"Handling RefreshToken request"}
+{"time":"2024-08-18T12:36:49.670677971+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-08-18T12:36:49.685196114+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-08-18T12:36:49.68528777+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-08-18T17:12:45.310219698+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-08-18T17:12:45.316991256+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-08-18T17:12:45.317109087+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-08-18T17:15:04.261795058+05:00","level":"ERROR","msg":"Error register user","error":"pq: column \"full_name\" of relation \"users\" does not exist"}
+{"time":"2024-08-18T17:43:28.639268237+05:00","level":"INFO","msg":"Starting the server ..."}
+{"time":"2024-08-18T17:43:28.649879147+05:00","level":"INFO","msg":"server is running","PORT":":8081"}
+{"time":"2024-08-18T17:43:28.649976414+05:00","level":"INFO","msg":"server is running ","PORT":":50050"}
+{"time":"2024-08-18T17:43:54.173558947+05:00","level":"INFO","msg":"user login successfully"}

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "genproto/destination";
+option go_package = "generated/destination";
 
 package travel_destination;
 

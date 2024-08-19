@@ -68,7 +68,7 @@ info:
   title: Auth Service API
   version: "1.0"
 paths:
-  /api/v1/auth/login:
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -100,7 +100,7 @@ paths:
       summary: Login a user
       tags:
       - Auth
-  /api/v1/auth/logout:
+  /auth/logout:
     post:
       consumes:
       - application/json
@@ -117,11 +117,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Success'
+            type: string
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.Errors'
+            type: string
         "500":
           description: Internal Server Error
           schema:
@@ -131,7 +131,7 @@ paths:
       summary: Logout user
       tags:
       - Auth
-  /api/v1/auth/refresh:
+  /auth/refresh:
     post:
       consumes:
       - application/json
@@ -166,7 +166,7 @@ paths:
       summary: Refresh access token
       tags:
       - Auth
-  /api/v1/auth/register:
+  /auth/register:
     post:
       consumes:
       - application/json
@@ -192,7 +192,7 @@ paths:
       summary: Register a new user
       tags:
       - Auth
-  /api/v1/auth/reset-password:
+  /auth/reset-password:
     post:
       consumes:
       - application/json
@@ -228,7 +228,7 @@ paths:
       summary: Reset Password
       tags:
       - Auth
-  /api/v1/auth/reset-password/new-password:
+  /auth/reset-password/new-password:
     post:
       consumes:
       - application/json

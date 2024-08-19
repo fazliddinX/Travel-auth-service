@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "genproto/stories";
+option go_package = "generated/stories";
 
 package travel_stories;
 
