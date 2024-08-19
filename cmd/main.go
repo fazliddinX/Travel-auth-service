@@ -38,7 +38,7 @@ func main() {
 		logs.Logger.Info("server is running", "PORT", cfg.HTTP_PORT)
 		err := router.Run(cfg.HTTP_PORT)
 		if err != nil {
-			logs.Logger.Error("Faild server is running", "error", err.Error())
+			logs.Logger.Error("Failed server is running", "error", err.Error())
 			log.Fatal(err)
 		}
 	}()
